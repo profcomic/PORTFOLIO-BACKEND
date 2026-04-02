@@ -6,8 +6,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('projects.urls')),
-    # Custom admin routes
-    path('admin-dashboard/', include('projects.admin_urls')),
+    path('admin-dashboard/', include('professor.admin_urls', namespace='custom_admin')),
 ]
 
 # Serve media files during development

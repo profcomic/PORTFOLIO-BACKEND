@@ -46,7 +46,10 @@ ROOT_URLCONF = 'professor.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            BASE_DIR / 'projects' / 'templates',
+            BASE_DIR / 'professor' / 'templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
