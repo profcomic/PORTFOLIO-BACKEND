@@ -1,0 +1,208 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-2">Total Projects</h6>
+                    <h3 class="mb-0">{{ total_projects }}</h3>
+                </div>
+                <div class="text-primary">
+                    <i class="bi bi-folder-fill" style="font-size: 2rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-2">Recent Projects</h6>
+                    <h3 class="mb-0">{{ recent_projects|length }}</h3>
+                </div>
+                <div class="text-success">
+                    <i class="bi bi-clock-history" style="font-size: 2rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-2">Active Projects</h6>
+                    <h3 class="mb-0">{{ total_projects }}</h3>
+                </div>
+                <div class="text-warning">
+                    <i class="bi bi-lightning-fill" style="font-size: 2rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-2">Quick Actions</h6>
+                    <a href="{% url 'custom_admin:project_create' %}" class="btn btn-primary-custom btn-sm">
+                        <i class="bi bi-plus-circle"></i> Add Project
+                    </a>
+                </div>
+                <div class="text-info">
+                    <i class="bi bi-lightning-charge-fill" style="font-size: 2rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0">
+                <h5 class="mb-0">Recent Projects</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_projects %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Date</th>
+                                    <th>Tech Stack</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for project in recent_projects %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if project.image %}
+                                                <img src="{{ project.image.url }}" alt="{{ project.title }}" 
+                                                     class="rounded me-3" style="width: 40px; height: 40px; object-fit: cover;">
+                                            {% else %}
+                                                <div class="rounded me-3 bg-primary d-flex align-items-center justify-content-center" 
+                                                     style="width: 40px; height: 40px;">
+                                                    <i class="bi bi-folder text-white"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <h6 class="mb-0">{{ project.title }}</h6>
+                                                <small class="text-muted">{{ project.description|truncatewords:10 }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if project.project_date %}
+                                            {{ project.project_date|date:"M d, Y" }}
+                                        {% else %}
+                                            <span class="text-muted">Not set</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% for tech in project.tech_stack|slice:":3" %}
+                                            <span class="tech-badge">{{ tech }}</span>
+                                        {% endfor %}
+                                        {% if project.tech_stack|length > 3 %}
+                                            <span class="text-muted">+{{ project.tech_stack|length|add:"-3" }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Active</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'custom_admin:project_edit' project.pk %}" 
+                                               class="btn btn-outline-primary" title="Edit">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <button onclick="confirmDelete('{% url 'custom_admin:project_delete' project.pk %}', '{{ project.title|escapejs }}')" 
+                                                    class="btn btn-outline-danger" title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <a href="{% url 'custom_admin:project_list' %}" class="btn btn-outline-primary">
+                            View All Projects <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-folder-plus" style="font-size: 3rem; color: var(--primary-color);"></i>
+                        <h5 class="mt-3">No Projects Yet</h5>
+                        <p class="text-muted">Start by adding your first project to showcase your work.</p>
+                        <a href="{% url 'custom_admin:project_create' %}" class="btn btn-primary-custom">
+                            <i class="bi bi-plus-circle"></i> Create Your First Project
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0">
+                <h5 class="mb-0">Quick Stats</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <h4 class="text-primary">{{ total_projects }}</h4>
+                        <small class="text-muted">Total</small>
+                    </div>
+                    <div class="col-4">
+                        <h4 class="text-success">{{ recent_projects|length }}</h4>
+                        <small class="text-muted">Recent</small>
+                    </div>
+                    <div class="col-4">
+                        <h4 class="text-info">100%</h4>
+                        <small class="text-muted">Active</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0">
+                <h5 class="mb-0">System Info</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Django Version</span>
+                    <span class="text-muted">5.2.2</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Database</span>
+                    <span class="text-muted">SQLite</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>Environment</span>
+                    <span class="badge bg-success">Development</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

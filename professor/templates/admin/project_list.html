@@ -1,0 +1,209 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Projects{% endblock %}
+
+{% block page_actions %}
+<div class="btn-group" role="group">
+    <a href="{% url 'custom_admin:project_create' %}" class="btn btn-primary-custom">
+        <i class="bi bi-plus-circle"></i> Add Project
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white border-0">
+        <div class="row align-items-center">
+            <div class="col">
+                <h5 class="mb-0">All Projects</h5>
+            </div>
+            <div class="col-auto">
+                <form method="get" class="d-flex">
+                    <input type="text" name="search" class="form-control me-2" 
+                           placeholder="Search projects..." value="{{ search_query }}">
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if page_obj %}
+            <div class="table-responsive">
+                <table class="table table-hover table-custom">
+                    <thead>
+                        <tr>
+                            <th>Project</th>
+                            <th>Date</th>
+                            <th>Tech Stack</th>
+                            <th>GitHub</th>
+                            <th>Live Demo</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for project in page_obj %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {% if project.image %}
+                                        <img src="{{ project.image.url }}" alt="{{ project.title }}" 
+                                             class="rounded me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                    {% else %}
+                                        <div class="rounded me-3 bg-primary d-flex align-items-center justify-content-center" 
+                                             style="width: 50px; height: 50px;">
+                                            <i class="bi bi-folder text-white"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <h6 class="mb-0">{{ project.title }}</h6>
+                                        <small class="text-muted">{{ project.description|truncatewords:15 }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if project.project_date %}
+                                    <span class="badge bg-info">
+                                        {{ project.project_date|date:"M d, Y" }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted">Not set</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex flex-wrap">
+                                    {% for tech in project.tech_stack|slice:":2" %}
+                                        <span class="tech-badge">{{ tech }}</span>
+                                    {% endfor %}
+                                    {% if project.tech_stack|length > 2 %}
+                                        <span class="text-muted">+{{ project.tech_stack|length|add:"-2" }}</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                {% if project.github_url %}
+                                    <a href="{{ project.github_url }}" target="_blank" 
+                                       class="btn btn-sm btn-outline-dark" title="View on GitHub">
+                                        <i class="bi bi-github"></i>
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if project.live_demo %}
+                                    <a href="{{ project.live_demo }}" target="_blank" 
+                                       class="btn btn-sm btn-outline-primary" title="View Live Demo">
+                                        <i class="bi bi-box-arrow-up-right"></i>
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small class="text-muted">
+                                    {{ project.created_at|date:"M d, Y" }}
+                                </small>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'custom_admin:project_edit' project.pk %}" 
+                                       class="btn btn-outline-primary" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <button onclick="confirmDelete('{% url 'custom_admin:project_delete' project.pk %}', '{{ project.title|escapejs }}')" 
+                                            class="btn btn-outline-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+                <nav aria-label="Project pagination">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-folder-x" style="font-size: 3rem; color: var(--primary-color);"></i>
+                <h5 class="mt-3">No Projects Found</h5>
+                {% if search_query %}
+                    <p class="text-muted">No projects found matching "{{ search_query }}".</p>
+                    <a href="{% url 'custom_admin:project_list' %}" class="btn btn-outline-primary">
+                        Clear Search
+                    </a>
+                {% else %}
+                    <p class="text-muted">Start by adding your first project to showcase your work.</p>
+                    <a href="{% url 'custom_admin:project_create' %}" class="btn btn-primary-custom">
+                        <i class="bi bi-plus-circle"></i> Create Your First Project
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Stats -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <h4 class="text-primary">{{ page_obj.paginator.count }}</h4>
+                        <small class="text-muted">Total Projects</small>
+                    </div>
+                    <div class="col-md-3">
+                        <h4 class="text-success">{{ page_obj|length }}</h4>
+                        <small class="text-muted">Showing</small>
+                    </div>
+                    <div class="col-md-3">
+                        <h4 class="text-info">{{ page_obj.number }}</h4>
+                        <small class="text-muted">Current Page</small>
+                    </div>
+                    <div class="col-md-3">
+                        <h4 class="text-warning">{{ page_obj.paginator.num_pages }}</h4>
+                        <small class="text-muted">Total Pages</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

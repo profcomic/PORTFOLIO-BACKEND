@@ -1,0 +1,260 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}{{ action }} Project{% endblock %}
+
+{% block page_actions %}
+<div class="btn-group" role="group">
+    <a href="{% url 'custom_admin:project_list' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Projects
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0">
+                <h5 class="mb-0">{{ action }} Project</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <!-- Basic Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">Basic Information</h6>
+                        </div>
+                        
+                        <div class="col-md-12 mb-3">
+                            <label for="{{ form.title.id_for_label }}" class="form-label">
+                                Project Title <span class="text-danger">*</span>
+                            </label>
+                            {{ form.title }}
+                            {% if form.title.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.title.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-12 mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">
+                                Description <span class="text-danger">*</span>
+                            </label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.description.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.project_date.id_for_label }}" class="form-label">
+                                Project Date <span class="text-danger">*</span>
+                            </label>
+                            {{ form.project_date }}
+                            {% if form.project_date.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.project_date.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">Date when the project was completed</small>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.image.id_for_label }}" class="form-label">
+                                Project Image
+                            </label>
+                            {{ form.image }}
+                            {% if form.image.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.image.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">Upload project screenshot/logo (optional)</small>
+                            {% if form.instance.image %}
+                                <div class="mt-2">
+                                    <img src="{{ form.instance.image.url }}" alt="Current image" 
+                                         class="img-thumbnail" style="max-height: 100px;">
+                                    <br>
+                                    <small class="text-muted">Current image</small>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Technical Details -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">Technical Details</h6>
+                        </div>
+                        
+                        <div class="col-md-12 mb-3">
+                            <label for="{{ form.tech_stack.id_for_label }}" class="form-label">
+                                Tech Stack <span class="text-danger">*</span>
+                            </label>
+                            {{ form.tech_stack }}
+                            {% if form.tech_stack.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.tech_stack.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">Enter technologies separated by commas (e.g., Django, React, PostgreSQL)</small>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.github_url.id_for_label }}" class="form-label">
+                                GitHub URL
+                            </label>
+                            {{ form.github_url }}
+                            {% if form.github_url.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.github_url.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.live_demo.id_for_label }}" class="form-label">
+                                Live Demo URL
+                            </label>
+                            {{ form.live_demo }}
+                            {% if form.live_demo.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.live_demo.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger alert-custom">
+                            {{ form.non_field_errors|join:", " }}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'custom_admin:project_list' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary-custom">
+                            <i class="bi bi-check-circle"></i> {{ action }} Project
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Help Card -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white border-0">
+                <h6 class="mb-0">
+                    <i class="bi bi-info-circle"></i> Help & Tips
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6 class="text-muted">Required Fields</h6>
+                    <small class="text-muted">
+                        Fields marked with <span class="text-danger">*</span> are required.
+                    </small>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-muted">Tech Stack Format</h6>
+                    <small class="text-muted">
+                        Enter technologies separated by commas:<br>
+                        <code>Django, React, PostgreSQL, Redis</code>
+                    </small>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-muted">Image Upload</h6>
+                    <small class="text-muted">
+                        Upload project screenshots, logos, or preview images.<br>
+                        Recommended size: 1200x800px
+                    </small>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-muted">URL Requirements</h6>
+                    <small class="text-muted">
+                        At least one URL (GitHub or Live Demo) is required.<br>
+                        GitHub URLs should be valid GitHub repository links.
+                    </small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Preview Card -->
+        {% if form.instance.title %}
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0">
+                <h6 class="mb-0">
+                    <i class="bi bi-eye"></i> Preview
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <h6>{{ form.instance.title }}</h6>
+                    <p class="text-muted small">{{ form.instance.description|truncatewords:20 }}</p>
+                    {% if form.instance.tech_stack %}
+                        <div class="mb-2">
+                            {% for tech in form.instance.tech_stack|slice:":3" %}
+                                <span class="badge bg-primary">{{ tech }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if form.instance.project_date %}
+                        <small class="text-muted">
+                            {{ form.instance.project_date|date:"M d, Y" }}
+                        </small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-resize textareas
+    const textareas = document.querySelectorAll('textarea');
+    textareas.forEach(function(textarea) {
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+    });
+    
+    // Form validation feedback
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        const requiredFields = form.querySelectorAll('[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(function(field) {
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            showAlert('Please fill in all required fields', 'danger');
+        }
+    });
+});
+</script>
+{% endblock %}
